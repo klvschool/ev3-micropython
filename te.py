@@ -18,7 +18,7 @@ right_sensor = ColorSensor(Port.S2)
 right_motor = Motor(Port.C)
 arm = Motor(Port.A)
 left_motor = Motor(Port.B)
-robot = DriveBase(left_motor, right_motor,  wheel_diameter=55.5, axle_track=163)
+robot = DriveBase(left_motor, right_motor, wheel_diameter=55.5, axle_track=163)
 allow_color = [Color.BLUE, Color.RED, Color.WHITE, Color.BROWN, Color.YELLOW ] 
 p_color =  [Color.GREEN]
 
@@ -54,11 +54,14 @@ def foword_white():
 
 
 def black_right():
-    if (right_sensor.color() == Color.BLACK and  right_sensor.reflection() < 5) or (left_sensor.color() == Color.BLACK):
+    if (right_sensor.color() == Color.BLACK   and right_sensor.reflection() <=5) or (left_sensor.color() == Color.BLACK):
         robot_stop()
         wait(100)
         robot.straight(-10)
+        robot_stop()
+        robot_stop()
         tune_black()
+        robot_stop()
         robot.straight(-50)
         global turn_count
         if(turn_count in turn_rightlist):
@@ -67,17 +70,17 @@ def black_right():
         elif(turn_count in turn_leftlist):
             robot_turn_PID(-90)  
             turn_count = turn_count+1   
-            
+            #
 def tune_black():
     print('tune_black')
     robot_stop()
-    if ((right_sensor.color() == Color.BLACK and  right_sensor.reflection() <= 5)and left_sensor.color() != Color.BLACK):
+    if ((right_sensor.color() == Color.BLACK  and right_sensor.reflection() <5 )and left_sensor.color() != Color.BLACK):
         while (left_sensor.color() != Color.BLACK):
             right_motor.hold()
             left_motor.run(300)
         robot_stop()
 
-    if ((left_sensor.color() == Color.BLACK and  left_sensor.reflection() <= 5) and right_sensor.color() != Color.BLACK):
+    if (left_sensor.color() == Color.BLACK  and right_sensor.color() != Color.BLACK):
         while (right_sensor.color() != Color.BLACK):
             right_motor.run(300)
             left_motor.hold()
@@ -170,10 +173,10 @@ def robot_stopgreen():
     global drop_point
     if  (right_sensor.color()  == Color.GREEN or left_sensor.color() == Color.GREEN):
         # robot_stop()
-        robot.drive(200,0)
+        robot.straight(140)
         # robot_forword()
         # forword()
-        # robot_stop()
+        robot_stop()
         while left_sensor.color() == Color.BLACK or right_sensor.color() == Color.BLACK :
             tune_black()
             wait(500)
@@ -186,6 +189,10 @@ def robot_stopgreen():
             # robot.straight(130)
             # gyro.reset_angle(0)
             robot_stop()
+            if drop_point == 1:
+                robot.straight(150)
+                robot_turn_PID(90)
+                robot.straight(600)
             # exit()
 
 
@@ -193,7 +200,7 @@ def robot_turn_PID(angle=0):
     # correction = (0 - gyro.angle())*3
     gyro.reset_angle(0)
     # robot.turn(angle)
-    PROPORTIONAL_GAIN = 2.3
+    PROPORTIONAL_GAIN = 3.2
     INTEGRAL_GAIN = 0.0008
     DERIVATIVE_GAIN = 0.001
     integral = 0
@@ -239,10 +246,10 @@ def robot_turn(angle=0):
 robot_stop()
 arm.reset_angle(0)
 # robot.settings(200, 200, 360, 500)
-# gyro.reset_angle(0)
-while drop_point < 5:
+gyro.reset_angle(0)
+while True:
 # while True:
-    print('Right :{r} , Left :{l}'.format(r=right_sensor.color(),l=left_sensor.color()))
+    # print('Right :{r} , Left :{l}'.format(r=right_sensor.color(),l=left_sensor.color()))
     # robot.reset()
     # if Button.CENTER in ev3.buttons.pressed():
     # if drop_box(1) : 
@@ -250,10 +257,7 @@ while drop_point < 5:
     foword_white()
     black_right()
     robot_stopgreen()
-    if drop_point == 1:
-        robot.straight(150)
-        robot_turn_PID(90)
-        robot.straight(600)
+   
         
     # foword_white()
     # black_right()
