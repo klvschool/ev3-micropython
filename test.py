@@ -138,7 +138,8 @@ def robot_turn_PID(angle=0):
         derivative = last_error_angle
 
         turn_rate = PROPORTIONAL_GAIN * last_error_angle 
-        robot.drive(0, turn_rate)
+        if abs(gyro_offset % 1) == 0  :
+            robot.drive(0, turn_rate)
         wait(300)
         error_angle = angle -  gyro_sensor.angle()
         # wait(3000)
